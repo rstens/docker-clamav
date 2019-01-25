@@ -27,6 +27,15 @@ RUN wget -O /var/lib/clamav/main.cvd http://database.clamav.net/main.cvd && \
 RUN mkdir /var/run/clamav && \
     chown clamav:clamav /var/run/clamav && \
     chmod 750 /var/run/clamav
+    
+# Change the group ownerships for few folders in order to run Clamav in OpenShift.
+# OpenShift runs the container as an user specified by OpenShift, it is neither root or Clamav user but the user belongs root group.
+RUN chgrp -R root /var/log/clamav
+RUN chmod -R g+w /var/log/clamav
+RUN chgrp -R root /var/lib/clamav
+RUN chmod -R g+w /var/lib/clamav
+RUN chgrp -R root /run/clamav
+RUN chmod -R g+w /run/clamav
 
 # av configuration update
 RUN sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf && \
