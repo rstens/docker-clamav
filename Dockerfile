@@ -36,6 +36,8 @@ RUN chgrp -R root /var/lib/clamav
 RUN chmod -R g+w /var/lib/clamav
 RUN chgrp -R root /run/clamav
 RUN chmod -R g+w /run/clamav
+RUN chgrp -R root /var/run/clamav
+RUN chmod -R g+w /var/run/clamav
 
 # av configuration update
 RUN sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf && \
