@@ -1,21 +1,22 @@
-FROM debian:stretch-slim
-LABEL author="http://m-ko.de Markus Kosmal <dude@m-ko.de>"
+FROM debian:buster
 
 # Debian Base to use
-ENV DEBIAN_VERSION stretch
+ENV DEBIAN_VERSION buster
 
 # initial install of av daemon
 RUN echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION main contrib non-free" > /etc/apt/sources.list && \
     echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION-updates main contrib non-free" >> /etc/apt/sources.list && \
-    echo "deb http://security.debian.org/ $DEBIAN_VERSION/updates main contrib non-free" >> /etc/apt/sources.list && \
-    apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y -qq \
+    echo "deb http://security.debian.org/ $DEBIAN_VERSION/updates main contrib non-free" >> /etc/apt/sources.list
+
+RUN apt-get update
+RUN DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y -qq \
         clamav-daemon \
         clamav-freshclam \
-        libclamunrar7 \
-        wget && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+        libclamunrar9 \
+        wget
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get clean
+RUN rm -rf /var/lib/apt/lists/*
 
 # initial update of av databases
 RUN wget -O /var/lib/clamav/main.cvd http://database.clamav.net/main.cvd && \
@@ -30,14 +31,14 @@ RUN mkdir /var/run/clamav && \
     
 # Change the group ownerships for few folders in order to run Clamav in OpenShift.
 # OpenShift runs the container as an user specified by OpenShift, it is neither root or Clamav user but the user belongs root group.
-RUN chgrp -R root /var/log/clamav
-RUN chmod -R g+w /var/log/clamav
-RUN chgrp -R root /var/lib/clamav
-RUN chmod -R g+w /var/lib/clamav
-RUN chgrp -R root /run/clamav
-RUN chmod -R g+w /run/clamav
-RUN chgrp -R root /var/run/clamav
-RUN chmod -R g+w /var/run/clamav
+RUN chgrp -R root /var/log/clamav && \
+    chmod -R g+w /var/log/clamav && \
+    chgrp -R root /var/lib/clamav && \
+    chmod -R g+w /var/lib/clamav && \
+    chgrp -R root /run/clamav && \
+    chmod -R g+w /run/clamav && \
+    chgrp -R root /var/run/clamav && \
+    chmod -R g+w /var/run/clamav
 
 # av configuration update
 RUN sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf && \
