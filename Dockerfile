@@ -20,9 +20,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get clean
 RUN rm -rf /var/lib/apt/lists/*
 
 # initial update of av databases
-RUN wget -O /var/lib/clamav/main.cvd http://database.clamav.net/main.cvd && \
-    wget -O /var/lib/clamav/daily.cvd http://database.clamav.net/daily.cvd && \
-    wget -O /var/lib/clamav/bytecode.cvd http://database.clamav.net/bytecode.cvd && \
+RUN wget -O /var/lib/clamav/main.cvd https://clamav-biohub.s3.ca-central-1.amazonaws.com/main.cvd && \
+    wget -O /var/lib/clamav/daily.cvd https://clamav-biohub.s3.ca-central-1.amazonaws.com/daily.cvd && \
+    wget -O /var/lib/clamav/bytecode.cvd https://clamav-biohub.s3.ca-central-1.amazonaws.com/bytecode.cvd && \
     chown clamav:clamav /var/lib/clamav/*.cvd
 
 # permission juggling
